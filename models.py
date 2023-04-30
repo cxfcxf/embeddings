@@ -11,7 +11,8 @@ def load_quantized(model_name, args):
     path_to_model = Path(f'{args.model_dir}/{model_name}')
     LOG.debug(f"model path: {path_to_model}")
 
-    model = AutoGPTQForCausalLM.from_quantized(path_to_model,  device="cuda:0", use_safetensors=args.use_safetensors)
+    # i will force it to use triton which loads whole model to GPU, otherwise it litterally cant be used due to slowness
+    model = AutoGPTQForCausalLM.from_quantized(path_to_model,  device="cuda:0", use_triton=True, use_safetensors=args.use_safetensors)
 
     return model
 

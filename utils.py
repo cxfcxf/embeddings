@@ -54,7 +54,7 @@ def make_chain(pipeline):
     {context}
 
     Question: {question}
-    Answer:"""
+    Answer: """
 
     prompt = PromptTemplate(
         template=prompt_template, input_variables=["context", "question"]

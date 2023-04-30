@@ -1,7 +1,13 @@
 # embeddings
-This binds to using redis, so if you dont have redis running, it will not work
+This binds to redis stack server for presistent storage, so if you dont have redis running, it will not work
+
+# pre-requests
+You will need cuda extention installed which be compatiable with pytorch version 2.0.0
 
 # Usage
+the basic idea of this is to load a gptq model and run embedding against it instead of requiring openAI connection
+
+the gptq model is 4 bits with 128 group size model which loses some precision but allow you to fit a larger model in VRAM, for reference [GTPQ](https://arxiv.org/pdf/2210.17323.pdf)
 
 ## storing documents into vector store
 ```bash
@@ -13,6 +19,8 @@ Batches: 100%|██████████████████████
 INFO    - Index already exists
 INFO    - finished, exiting...
 ```
+
+--docs take multiple files, and currently only does txt and pdf
 
 ## loading vector store with model
 ```bash
@@ -36,7 +44,12 @@ To create a public link, set `share=True` in `launch()`.
 # About loading models
 there are two way of loading models, normally its expecting a model which is quantized with GPTQ 4bits 128group_size
 
-you can specify --no-gptq, it would load model normally (you can barely run a 7B model with 24GB VRAM just FYI)
+you can specify --no-gptq, it would load model normally (you can prob fit a 13b model with 8 bits for 24GB VRAM)
+
+# About converting model to 4bits
+Please use [AutoGPTQ](https://github.com/PanQiWei/AutoGPTQ) to quantlized it, a 13b model will need about 35GB DRAM
 
 # Current issues
 * it does seems the gptq quantized model done by [AutoGPTQ](https://github.com/PanQiWei/AutoGPTQ) which from [GPTQ-for-LLaMa](https://github.com/qwopqwop200/GPTQ-for-LLaMa) is not very performant, somehow the old cuda branch [GPTQ-for-LLaMa](https://github.com/oobabooga/GPTQ-for-LLaMa/) is performant. but AutoGPTQ makes it really easy to use, so i stick with that
+
+^ the issue is solved by force the model load with `use_triton=True` which loads the whole model into VRAM
