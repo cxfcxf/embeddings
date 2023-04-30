@@ -40,7 +40,8 @@ def make_pipeline(model, tokenizer):
                                model=model,
                                tokenizer=tokenizer,
                                device=0,
-                               max_length=512)
+                               max_length=512,
+                               temperature=0.7)
 
     return model_pipeline
 

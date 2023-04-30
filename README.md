@@ -9,6 +9,9 @@ the basic idea of this is to load a gptq model and run embedding against it inst
 
 the gptq model is 4 bits with 128 group size model which loses some precision but allow you to fit a larger model in VRAM, for reference [GTPQ](https://arxiv.org/pdf/2210.17323.pdf)
 
+# Example chat of stat of the union
+![Chat Example](https://github.com/cxfcxf/embeddings/blob/main/example.png?raw=true)
+
 ## storing documents into vector store
 ```bash
 ❯ python embeddings.py --index-name state_of_the_union store --docs state_of_the_union.txt

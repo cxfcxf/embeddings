@@ -17,7 +17,7 @@ class WebApp(object):
         LOG.info(docs)
         result = self.chain.run(input_documents=docs, question=query)
 
-        return result
+        return result.strip()
 
     def respond(self, message, chat_history):
         bot_message = self.conversation(message)
