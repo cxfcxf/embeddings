@@ -39,4 +39,4 @@ there are two way of loading models, normally its expecting a model which is qua
 you can specify --no-gptq, it would load model normally (you can barely run a 7B model with 24GB VRAM just FYI)
 
 # Current issues
-* it does seems the gptq quantized model done by (AutoGPTQ)[https://github.com/PanQiWei/AutoGPTQ] which from (GPTQ-for-LLaMa)[https://github.com/qwopqwop200/GPTQ-for-LLaMa] is not very performant, somehow the old cuda branch (GPTQ-for-LLaMa)[https://github.com/oobabooga/GPTQ-for-LLaMa/] is performant. but AutoGPTQ makes it really easy to use, so i stick with that
+* it does seems the gptq quantized model done by [AutoGPTQ](https://github.com/PanQiWei/AutoGPTQ) which from [GPTQ-for-LLaMa](https://github.com/qwopqwop200/GPTQ-for-LLaMa) is not very performant, somehow the old cuda branch [GPTQ-for-LLaMa](https://github.com/oobabooga/GPTQ-for-LLaMa/) is performant. but AutoGPTQ makes it really easy to use, so i stick with that
