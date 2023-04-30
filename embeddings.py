@@ -6,10 +6,9 @@ import logging
 
 from transformers import AutoTokenizer
 
-# local libs
-from models import load_quantized_gptq, load_quantized
 from vector_stores import VectorStores
-from utils import documents_loader, make_chain
+from models import load_normal, load_quantized
+from utils import documents_loader, make_pipeline, make_chain
 from webui import WebApp
 
 LOG = logging.getLogger(__name__)
@@ -35,11 +34,6 @@ def arg_parse():
     # global parser
     subparsers = parser.add_subparsers(dest="command")
 
-    parser.add_argument('--model-dir',
-                        type=str,
-                        help='model dir',
-                        default='/home/siegfried/text-generation-webui/models')
-
     parser.add_argument('--redis-url',
                         type=str,
                         help='redis url',
@@ -49,11 +43,6 @@ def arg_parse():
                         type=str,
                         help='index name',
                         required=True)
-
-    parser.add_argument('--encode-model',
-                        type=str,
-                        help='encode model',
-                        default='sentence-transformers_all-MiniLM-L6-v2')
 
     parser.add_argument('--debug',
                         action='store_true',
@@ -80,45 +69,24 @@ def arg_parse():
     # run parser
     run_parser = subparsers.add_parser("run")
 
+
+    run_parser.add_argument('--model-dir',
+                        type=str,
+                        help='model dir',
+                        default='/home/siegfried/model-gptq')
+
     run_parser.add_argument('--model-name',
                             type=str,
                             help='model name',
                             required=True)
 
-    run_parser.add_argument('--model-type',
-                            type=str,
-                            help='model type',
-                            default='llama')
-
-    run_parser.add_argument('--wbits',
-                            type=int,
-                            help='wbits',
-                            default=4)
-
-    run_parser.add_argument('--groupsize',
-                            type=int,
-                            help='groupsize',
-                            default=128)
-
     run_parser.add_argument('--no-gptq',
                             action='store_true',
                             help='if model is NOT gptq quantized.')
 
-    run_parser.add_argument('--pre-layer',
-                            type=int,
-                            help='pre layer')
-
-    run_parser.add_argument('--gpu-memory',
-                            type=int,
-                            help='gpu memory')
-
-    run_parser.add_argument('--cpu-memory',
-                            type=int,
-                            help='cpu memory')
-
-    run_parser.add_argument('--cpu',
+    run_parser.add_argument('--use-safetensors',
                             action='store_true',
-                            help='cpu')
+                            help='use fast load for tokenizer')
 
     run_parser.add_argument('--share',
                             action='store_true',
@@ -134,9 +102,7 @@ def main():
     set_logging(args)
 
     vs = VectorStores(redis_url=args.redis_url,
-                      index_name=args.index_name,
-                      model_dir=args.model_dir,
-                      encode_model=args.encode_model)
+                      index_name=args.index_name)
 
     if args.command == "store":
         splited_docs = documents_loader(args.docs,
@@ -156,12 +122,13 @@ def main():
 
         LOG.info(f"Loading the model from {model_path}...")
         if args.no_gptq:
-            model = load_quantized(args.model_name, args)
+            model = load_normal(args.model_name, args)
         else:
-            LOG.info("Loading GPTQ models...")
-            model = load_quantized_gptq(args.model_name, args)
+            LOG.info("Loading gptq quantized models...")
+            model = load_quantized(args.model_name, args)
 
-        chain = make_chain(model, tokenizer, args)
+        pipeline = make_pipeline(model, tokenizer)
+        chain = make_chain(pipeline)
 
         app = WebApp(rds=rds,
                      chain=chain,

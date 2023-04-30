@@ -13,6 +13,7 @@ class WebApp(object):
     def conversation(self, query):
         query = query.strip()
         docs = self.rds.similarity_search(query, k=3)
+        LOG.info(docs)
         result = self.chain.run(input_documents=docs, question=query)
 
         return result

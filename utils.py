@@ -29,25 +29,25 @@ def documents_loader(files, chunk_size, chunk_overlap):
         chunk_size=chunk_size,
         chunk_overlap=chunk_overlap,
         length_function=len)
+
     splited_docs = text_splitter.split_documents(documents)
 
     return splited_docs
 
 def make_pipeline(model, tokenizer):
+    LOG.info("creating transformer pipeline...")
     model_pipeline = pipeline("text-generation",
                                model=model,
                                tokenizer=tokenizer,
                                device=0,
-                               max_new_tokens=2048)
+                               max_length=512)
 
     return model_pipeline
 
 # you can specify RetrievalQA and use it to fetch docs along with answer
-def make_chain(model, tokenizer, args):
-
-    model_pipeline = make_pipeline(model, tokenizer)
-
-    llm = HuggingFacePipeline(pipeline=model_pipeline)
+def make_chain(pipeline):
+    LOG.info("creating chain...")
+    llm = HuggingFacePipeline(pipeline=pipeline)
 
     prompt_template = """Use the following pieces of context to answer the question at the end. If you don't know the answer, just say that you don't know, don't try to make up an answer.
 

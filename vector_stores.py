@@ -6,17 +6,16 @@ from langchain.vectorstores.redis import Redis
 LOG = logging.getLogger(__name__)
 
 class VectorStores(object):
-    def __init__(self, redis_url, index_name, model_dir, encode_model):
+    def __init__(self, redis_url, index_name):
         self.redis_url = redis_url
         self.index_name = index_name
-        self.model_dir = model_dir
-        self.model_name = encode_model
+        self.model_name = 'sentence-transformers/all-MiniLM-L6-v2'
 
         self.embeddings = self._get_embeddings()
 
     def _get_embeddings(self):
         LOG.info(f"Loading encoding model {self.model_name}...")
-        model_name = f"{self.model_dir}/{self.model_name}"
+        model_name = 'sentence-transformers/all-MiniLM-L6-v2'
         model_kwargs = {'device': 'cpu'}
         embeddings = HuggingFaceEmbeddings(model_name=model_name, model_kwargs=model_kwargs)
 
